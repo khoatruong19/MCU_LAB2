@@ -33,6 +33,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define COUNTER 50
+#define LED_COUNTER 100
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -137,6 +138,7 @@ int enableSeg(){
 }
 
 int counter = COUNTER;
+int ledCounter = LED_COUNTER;
 void changeSEG(){
 	counter--;
 	if(counter <= 0) {
@@ -169,11 +171,18 @@ void changeSEG(){
 
 }
 
+void blinkTwoLeds(){
+	ledCounter--;
+	if(ledCounter <= 0) {
+		HAL_GPIO_TogglePin(DOT_GPIO_Port , DOT_Pin);
+		ledCounter = LED_COUNTER;
+	}
+
+}
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-
 	changeSEG();
-
+ 	blinkTwoLeds();
 }
 
 int main(void)
