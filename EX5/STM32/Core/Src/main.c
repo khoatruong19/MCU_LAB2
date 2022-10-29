@@ -198,7 +198,7 @@ int enableSeg(){
 		}
 }
 
-int counter = COUNTER;  //EX4: counter = 2 * COUNTER;
+int counter = COUNTER;
 int ledCounter = LED_COUNTER;
 int led_buffer [4] = {5 , 3 , 2 , 1};
 int hour = 15 , minute = 8 , second = 50;
