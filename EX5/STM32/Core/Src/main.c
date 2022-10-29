@@ -32,8 +32,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define COUNTER 50
+#define COUNTER 100
 #define LED_COUNTER 100
+#define ONE_SECOND_DELAY 1000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -115,6 +116,51 @@ void display7SEG(int num){
 			HAL_GPIO_WritePin ( SEG5_GPIO_Port , SEG5_Pin , 0 ) ;
 			HAL_GPIO_WritePin ( SEG6_GPIO_Port , SEG6_Pin , 0 ) ;
 			break;
+	 case 5:
+			HAL_GPIO_WritePin ( SEG0_GPIO_Port , SEG0_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG1_GPIO_Port , SEG1_Pin , 1 ) ;
+			HAL_GPIO_WritePin ( SEG2_GPIO_Port , SEG2_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG3_GPIO_Port , SEG3_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG4_GPIO_Port , SEG4_Pin , 1 ) ;
+			HAL_GPIO_WritePin ( SEG5_GPIO_Port , SEG5_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG6_GPIO_Port , SEG6_Pin , 0 ) ;
+			break;
+	 case 6:
+			HAL_GPIO_WritePin ( SEG0_GPIO_Port , SEG0_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG1_GPIO_Port , SEG1_Pin , 1 ) ;
+			HAL_GPIO_WritePin ( SEG2_GPIO_Port , SEG2_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG3_GPIO_Port , SEG3_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG4_GPIO_Port , SEG4_Pin , 0) ;
+			HAL_GPIO_WritePin ( SEG5_GPIO_Port , SEG5_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG6_GPIO_Port , SEG6_Pin , 0 ) ;
+			break;
+	 case 7:
+			HAL_GPIO_WritePin ( SEG0_GPIO_Port , SEG0_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG1_GPIO_Port , SEG1_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG2_GPIO_Port , SEG2_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG3_GPIO_Port , SEG3_Pin , 1 ) ;
+			HAL_GPIO_WritePin ( SEG4_GPIO_Port , SEG4_Pin , 1) ;
+			HAL_GPIO_WritePin ( SEG5_GPIO_Port , SEG5_Pin , 1 ) ;
+			HAL_GPIO_WritePin ( SEG6_GPIO_Port , SEG6_Pin , 1 ) ;
+			break;
+	 case 8:
+			HAL_GPIO_WritePin ( SEG0_GPIO_Port , SEG0_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG1_GPIO_Port , SEG1_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG2_GPIO_Port , SEG2_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG3_GPIO_Port , SEG3_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG4_GPIO_Port , SEG4_Pin , 0) ;
+			HAL_GPIO_WritePin ( SEG5_GPIO_Port , SEG5_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG6_GPIO_Port , SEG6_Pin , 0 ) ;
+			break;
+	 case 9:
+			HAL_GPIO_WritePin ( SEG0_GPIO_Port , SEG0_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG1_GPIO_Port , SEG1_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG2_GPIO_Port , SEG2_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG3_GPIO_Port , SEG3_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG4_GPIO_Port , SEG4_Pin , 1) ;
+			HAL_GPIO_WritePin ( SEG5_GPIO_Port , SEG5_Pin , 0 ) ;
+			HAL_GPIO_WritePin ( SEG6_GPIO_Port , SEG6_Pin , 0 ) ;
+			break;
 	 default:
 		 break;
 
@@ -154,7 +200,8 @@ int enableSeg(){
 
 int counter = COUNTER;  //EX4: counter = 2 * COUNTER;
 int ledCounter = LED_COUNTER;
-int led_buffer [4] = {4 , 3 , 2 , 1};
+int led_buffer [4] = {5 , 3 , 2 , 1};
+int hour = 15 , minute = 8 , second = 50;
 void update7SEG(){
 	counter--;
 	if(counter <= 0) {
@@ -162,18 +209,22 @@ void update7SEG(){
 			 case firstSeg:
 				 	enableSeg();
 					display7SEG(led_buffer[firstSeg]);
+					state = secondSeg;
 					break;
 			 case secondSeg:
 				 	enableSeg();
 				 	display7SEG(led_buffer[secondSeg]);
+				 	state = thirdSeg;
 				 	break;
 			 case thirdSeg:
 				    enableSeg();
 				    display7SEG(led_buffer[thirdSeg]);
+				    state = fourthSeg;
 					break;
 			 case fourthSeg:
 				 	enableSeg();
 				 	display7SEG(led_buffer[fourthSeg]);
+				 	state = firstSeg;
 					break;
 			 default:
 				 	break;
@@ -191,8 +242,14 @@ void blinkTwoLeds(){
 
 }
 
+void updateClockBuffer(){
+	led_buffer[0] = hour/10;
+	led_buffer[1] = hour%10;
+	led_buffer[2] = minute/10;
+	led_buffer[3] = minute%10;
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	state = firstSeg;
 	update7SEG();
 	blinkTwoLeds();
 }
@@ -231,6 +288,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  	  second ++;
+	 	  if ( second >= 60) {
+	 		  second = 0;
+	 		  minute ++;
+	 	  }
+	 	  if( minute >= 60) {
+	 		  minute = 0;
+	 		  hour ++;
+	 	  }
+	 	  if( hour >=24) {
+	 		  hour = 0;
+	 	  }
+	 	   updateClockBuffer() ;
+	 	   HAL_Delay(ONE_SECOND_DELAY) ;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
