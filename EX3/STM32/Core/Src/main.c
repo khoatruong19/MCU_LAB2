@@ -152,7 +152,7 @@ int enableSeg(){
 		}
 }
 
-int counter = COUNTER;
+int counter = COUNTER;  //EX4: counter = 2 * COUNTER;
 int ledCounter = LED_COUNTER;
 int led_buffer [4] = {4 , 3 , 2 , 1};
 void update7SEG(){
